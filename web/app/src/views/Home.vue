@@ -59,7 +59,7 @@
               class="endpoint-group-header flex items-center justify-between p-4 bg-card border-b cursor-pointer hover:bg-accent/50 transition-colors"
             >
               <div class="flex items-center gap-3">
-                <ChevronDown v-if="uncollapsedGroups.has(group)" class="h-5 w-5 text-muted-foreground" />
+                <ChevronDown v-if="!collapsedGroups.has(group)" class="h-5 w-5 text-muted-foreground" />
                 <ChevronUp v-else class="h-5 w-5 text-muted-foreground" />
                 <h2 class="text-xl font-semibold text-foreground">{{ group }}</h2>
               </div>
@@ -73,7 +73,7 @@
             </div>
             
             <!-- Group Content -->
-            <div v-if="uncollapsedGroups.has(group)" class="endpoint-group-content p-4">
+            <div v-if="!collapsedGroups.has(group)" class="endpoint-group-content p-4">
               <!-- Suites Section -->
               <div v-if="items.suites.length > 0" class="mb-4">
                 <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Suites</h3>
@@ -222,7 +222,7 @@ const showRecentFailures = ref(false)
 const showAverageResponseTime = ref(true)
 const groupByGroup = ref(false)
 const sortBy = ref(localStorage.getItem('gatus:sort-by') || 'name')
-const uncollapsedGroups = ref(new Set())
+const collapsedGroups = ref(new Set())
 const resultPageSize = 50
 
 const filteredEndpoints = computed(() => {
@@ -505,29 +505,26 @@ const calculateFailingSuitesCount = (suites) => {
 }
 
 const toggleGroupCollapse = (groupName) => {
-  if (uncollapsedGroups.value.has(groupName)) {
-    uncollapsedGroups.value.delete(groupName)
+  if (collapsedGroups.value.has(groupName)) {
+    collapsedGroups.value.delete(groupName)
   } else {
-    uncollapsedGroups.value.add(groupName)
+    collapsedGroups.value.add(groupName)
   }
   // Save to localStorage
-  const uncollapsed = Array.from(uncollapsedGroups.value)
-  localStorage.setItem('gatus:uncollapsed-groups', JSON.stringify(uncollapsed))
-  localStorage.removeItem('gatus:collapsed-groups') // Remove old key if it exists
+  const collapsed = Array.from(collapsedGroups.value)
+  localStorage.setItem('gatus:collapsed-groups', JSON.stringify(collapsed))
 }
 
 const initializeCollapsedGroups = () => {
-  // Get saved uncollapsed groups from localStorage
+  // Get saved collapsed groups from localStorage
   try {
-    const saved = localStorage.getItem('gatus:uncollapsed-groups')
+    const saved = localStorage.getItem('gatus:collapsed-groups')
     if (saved) {
-      uncollapsedGroups.value = new Set(JSON.parse(saved))
+      collapsedGroups.value = new Set(JSON.parse(saved))
     }
-    // If no saved state, uncollapsedGroups stays empty (all collapsed by default)
   } catch (e) {
-    console.warn('Failed to parse saved uncollapsed groups:', e)
-    localStorage.removeItem('gatus:uncollapsed-groups')
-    // On error, uncollapsedGroups stays empty (all collapsed by default)
+    console.warn('Failed to parse saved collapsed groups:', e)
+    localStorage.removeItem('gatus:collapsed-groups')
   }
 }
 

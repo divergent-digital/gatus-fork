@@ -8,7 +8,7 @@
     <!-- Main App Container -->
     <div v-else-if="!config || !config.oidc || config.authenticated" class="relative">
       <!-- Header -->
-      <header class="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      <header v-if="false" class="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div class="container mx-auto px-4 py-4 max-w-7xl">
           <div class="flex items-center justify-between">
             <!-- Logo and Title -->
