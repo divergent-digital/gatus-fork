@@ -67,6 +67,9 @@ jobs:
             type=raw,value=divergent
             type=raw,value=divergent-${{ github.run_number }}
 
+      - name: Show Buildx platforms
+        run: docker buildx inspect --bootstrap
+
       - name: Build And Push Docker Image
         uses: docker/build-push-action@v6
         with:
