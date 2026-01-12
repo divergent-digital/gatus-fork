@@ -14,36 +14,13 @@ permissions:
 
 jobs:
   divergent-build:
-    name: Build and Push Image
+    name: Build And Push Image
     runs-on: ubuntu-latest
     timeout-minutes: 240
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Set Up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Regenerate Frontend Static Assets
-        shell: bash
-        run: |
-          make frontend-install-dependencies
-          make frontend-build
-
-      - name: Verify Generated Static Assets Exist
-        shell: bash
-        run: |
-          echo "== git status =="
-          git status --porcelain || true
-          echo
-          echo "== web/static (top) =="
-          ls -la web/static | head -n 200 || true
-          echo
-          echo "== web/static files sample =="
-          find web/static -maxdepth 3 -type f | head -n 50 || true
 
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v3
@@ -67,9 +44,6 @@ jobs:
             type=raw,value=divergent
             type=raw,value=divergent-${{ github.run_number }}
 
-      - name: Show Buildx platforms
-        run: docker buildx inspect --bootstrap
-
       - name: Build And Push Docker Image
         uses: docker/build-push-action@v6
         with:
@@ -80,3 +54,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

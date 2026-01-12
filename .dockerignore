@@ -1,8 +1,19 @@
-.examples
-Dockerfile
-.github
-.idea
+# Git / CI
 .git
-web/app
-*.db
-testdata
+.github
+
+# OS / editor
+.DS_Store
+
+# Node build junk (keep sources!)
+web/app/node_modules
+web/app/dist
+web/app/.cache
+
+# Go build outputs
+/out
+bin
+*.exe
+
+# Vendor if you don't use it
+# vendor
