@@ -117,11 +117,11 @@ func (provider *AlertProvider) buildHTTPRequest(cfg *Config, ep *endpoint.Endpoi
 		for index, conditionResult := range result.ConditionResults {
 			var prefix string
 			if conditionResult.Success {
-				prefix = "✅"
+				prefix = "🟢"
 			} else {
-				prefix = "❌"
+				prefix = "🔴"
 			}
-			formattedConditionResults += fmt.Sprintf("%s - `%s`", prefix, conditionResult.Condition)
+			formattedConditionResults += fmt.Sprintf("%s - `%s`\n", prefix, conditionResult.Condition)
 			if index < len(result.ConditionResults)-1 {
 				formattedConditionResults += ", "
 			}
