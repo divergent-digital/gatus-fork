@@ -1,19 +1,15 @@
-# Git / CI
+# Git / tooling
 .git
 .github
+.gitignore
 
-# OS / editor
+# OS/editor junk
 .DS_Store
 
-# Node build junk (keep sources!)
-web/app/node_modules
-web/app/dist
-web/app/.cache
+# Node junk (but do NOT ignore the source folders)
+**/node_modules
+**/dist
 
-# Go build outputs
-/out
-bin
-*.exe
-
-# Vendor if you don't use it
-# vendor
+# Keep Docker context small but DO NOT exclude these:
+!web/app/**
+!web/static/**
