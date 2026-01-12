@@ -48,5 +48,6 @@ jobs:
           push: true
           pull: true
           platforms: linux/amd64
+          progress: plain
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

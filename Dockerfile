@@ -2,17 +2,20 @@
 FROM node:20-alpine AS ui-builder
 WORKDIR /app
 
-# Copy only what the UI build needs first (better caching)
+# Build deps for node-gyp/native modules (safe even if you don't need them)
+RUN apk add --no-cache python3 make g++ git
+
+# If a build is memory-hungry, this prevents random OOM failures
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
+# Copy lockfiles first for better caching
 COPY web/app/package.json web/app/package-lock.json ./web/app/
 WORKDIR /app/web/app
 RUN npm ci
 
-# Now copy the full UI sources and build
+# Copy full UI sources and build
 COPY web/app ./web/app
-RUN npm run build
-
-# The Vue build should output into /app/web/static in your repo layout.
-# If your build outputs somewhere else, adjust the COPY below accordingly.
+RUN npm run build --loglevel verbose
 
 # ---------- Go build ----------
 FROM golang:1.22-alpine AS builder
@@ -21,14 +24,10 @@ WORKDIR /app
 
 COPY . ./
 
-# Replace repo web/static with freshly built assets
+# Replace web/static with freshly built assets from ui-builder
 COPY --from=ui-builder /app/web/static ./web/static
 
-# Do NOT run `go mod tidy -diff` inside Docker; it will fail if anything differs
-# and it can vary by Go version. Keep Docker builds deterministic.
 RUN go mod download
-
-# Build
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -o /out/gatus .
 
 # ---------- Runtime ----------
